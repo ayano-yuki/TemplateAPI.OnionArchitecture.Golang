@@ -1,0 +1,83 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is API Template for Onion Architecture.",
+        "title": "TemplateAPI.OnionArchitecture.Golang",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/health/api": {
+            "get": {
+                "description": "簡単なヘルスチェック",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "API疎通確認",
+                "responses": {}
+            }
+        },
+        "/health/db-command": {
+            "post": {
+                "description": "簡単なヘルスチェック",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "API疎通確認",
+                "parameters": [
+                    {
+                        "description": "リクエスト本文",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/health.DBCommandRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/health/db-query": {
+            "get": {
+                "description": "簡単なヘルスチェック",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "API疎通確認",
+                "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "health.DBCommandRequest": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "example": "sample text"
+                }
+            }
+        }
+    }
+}

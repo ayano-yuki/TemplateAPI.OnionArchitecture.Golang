@@ -1,65 +1,40 @@
 # TemplateAPI.OnionArchitecture.Golang
-Go言語で構築したAPIサーバーのテンプレートです。  
-MySQLとの接続を想定し、`air` を使ったホットリロード対応済み。  
-Clean Architecture（Onion Architecture）を意識したフォルダ構成で開発しています。
+Go言語のChi × SwagerUI × オニオンアーキテクチャで作成するWeb APIのテンプレートです。DBはMySQLLとの接続を想定し、air を使ったホットリロードにも対応しています。
 
-## 開発環境
-- Go 1.24.4
-- MySQL 8.0 (Docker利用推奨)
-- air v1.62.0 （Go用ホットリロードツール）
-- Windows / Linux対応 (Windowsは`air.toml`で`.exe`設定済み)
+## 機能
+- ホットリロード（[Air](https://github.com/air-verse/air)）
+- オニオンアーキテクチャによる分離設計
+- MySQL連携
+- Swagger UIによるAPIドキュメント生成（[swaggo](https://github.com/swaggo/swag)）
 
-## セットアップ
-### 1. Go モジュールの依存解決
-```bash
-cd API
-go mod download
-```
-### 2. MySQL コンテナ起動 (Docker利用時)
-```sh
-docker-compose up -d db
-```
+## 開発環境の立ち上げ
+### 前提条件
+- Go 1.24+
+- Docker / Docker Compose
+- Air (`go install github.com/air-verse/air@latest`)
+- swag (`go install github.com/swaggo/swag/cmd/swag@latest`)
 
-### 3. air のインストール
-※`$GOPATH/bin` または `$HOME/go/bin` にインストールされるので、PATHを通してください。
-```
-go install github.com/air-verse/air@latest
-```
+### 立ち上げコマンド
+1. MySQLをDockerで立ち上げる
+   ```bash
+	docker-compose up --build
 
-## air の設定 (ホットリロード用)
-`API/.air.toml` の設定例：
-```toml
-root = "."
-tmp_dir = "tmp"
+   ```
+2. APIを立ち上げる
+	```bash
+	# 依存取得
+	go mod tidy
 
-[build]
-cmd = "go build -o ./tmp/main.exe ."
-bin = "tmp/main.exe"
-include_ext = ["go", "tpl", "tmpl", "html"]
-exclude_dir = ["vendor"]
-exclude_file = ["*_test.go"]
-delay = 1000
-log = "stdout"
+	# Swagger ドキュメント生成
+	swag init --parseDependency --parseInternal
 
-[log]
-color = "true"
-time = "true"
-
-[run]
-watcher = "fsnotify"
-```
-
-## サーバー起動
-```bash
-cd API
-air
-```
-air が起動し、ファイル変更を監視しつつAPIサーバーを実行します。
-
-`http://localhost:8080/health/api` で動作確認可能です。
-
-## DB接続設定
-ソースコード内 `API/config/database_config.go` の以下の部分を適宜変更してください。
+	# ホットリロードで起動（Air）
+	# APIは http://localhost:8080 にて起動します。
+	# SwaggerUIは http://localhost:8080/swagger/ にてアクセスできる。
+	air
+	```
+## データベース接続設定
+環境変数による DB 接続情報は `config/database_config.go` 直書きしている
 ```go
 func LoadDBConfig() *DBConfig {
 	return &DBConfig{
@@ -70,4 +45,18 @@ func LoadDBConfig() *DBConfig {
 		Name:     "appDB",
 	}
 }
+
 ```
+
+## エラー共通レスポンス構造（例）
+全ハンドラでこの形式を使用し、config パッケージで集中管理しています。
+```go
+type ErrorResponse struct {
+  Code    int    `json:"code"`
+  Message string `json:"message"`
+}
+```
+
+## 注意事項
+- `tmp/` ディレクトリは Air によって一時生成され、.gitignore 済です。
+- `air` を実行すると `docs/` にSwagger関係のファイルが生成されます（バージョン管理推奨）。

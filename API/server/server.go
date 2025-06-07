@@ -12,6 +12,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
 
+	_ "API/docs"
+
+	httpSwagger "github.com/swaggo/http-swagger"
+
 	"API/config"
 	"API/infra"
 	"API/ui/api/health"
@@ -55,6 +59,7 @@ func NewServer() *Server {
 
 	log.SetOutput(io.Discard)
 
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	r.Route("/health", func(r chi.Router) {
 		r.Get("/api", healthHandler.CheckAPIConnection)
 		r.Get("/db-query", healthHandler.GetDBTexts)

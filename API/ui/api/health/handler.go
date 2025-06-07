@@ -16,6 +16,13 @@ func NewHandler(healthUC *usecase.HealthUsecase) *Handler {
 	return &Handler{healthUC: healthUC}
 }
 
+// CheckAPIConnection godoc
+// @Summary      API疎通確認
+// @Description  簡単なヘルスチェック
+// @Tags         health
+// @Accept       json
+// @Produce      json
+// @Router       /health/api [get]
 func (h *Handler) CheckAPIConnection(w http.ResponseWriter, r *http.Request) {
 	resp := map[string]string{
 		"status": "ok",
@@ -26,6 +33,13 @@ func (h *Handler) CheckAPIConnection(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetDBTexts godoc
+// @Summary      API疎通確認
+// @Description  簡単なヘルスチェック
+// @Tags         health
+// @Accept       json
+// @Produce      json
+// @Router       /health/db-query [get]
 func (h *Handler) GetDBTexts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -44,6 +58,14 @@ func (h *Handler) GetDBTexts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// InsertDBText godoc
+// @Summary      API疎通確認
+// @Description  簡単なヘルスチェック
+// @Tags         health
+// @Accept       json
+// @Produce      json
+// @Param        request body health.DBCommandRequest true "リクエスト本文"
+// @Router       /health/db-command [post]
 func (h *Handler) InsertDBText(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

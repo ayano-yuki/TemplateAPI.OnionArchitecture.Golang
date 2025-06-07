@@ -16,13 +16,5 @@ services:
     ports:
       - "3306:3306"
 
-  # swagger:
-  #   build:
-  #     context: ./Swagger
-  #   ports:
-  #     - "8081:80"  # ← ローカル8081をSwagger用コンテナの80番にマッピング
-  #   volumes:
-  #     - ./Swagger/docs:/usr/share/nginx/html:ro
-
 volumes:
   db_data:

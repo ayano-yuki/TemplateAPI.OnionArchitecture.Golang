@@ -2,7 +2,7 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-  cmd = "go build -o ./tmp/main.exe ."
+  cmd = 'cmd /C "swag init --parseDependency --parseInternal && go build -o ./tmp/main.exe ."'
   bin = "tmp/main.exe"
   include_ext = ["go", "tpl", "tmpl", "html"]
   exclude_dir = ["vendor"]

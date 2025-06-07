@@ -1,0 +1,56 @@
+basePath: /
+definitions:
+  health.DBCommandRequest:
+    properties:
+      text:
+        example: sample text
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is API Template for Onion Architecture.
+  title: TemplateAPI.OnionArchitecture.Golang
+  version: "1.0"
+paths:
+  /health/api:
+    get:
+      consumes:
+      - application/json
+      description: 簡単なヘルスチェック
+      produces:
+      - application/json
+      responses: {}
+      summary: API疎通確認
+      tags:
+      - health
+  /health/db-command:
+    post:
+      consumes:
+      - application/json
+      description: 簡単なヘルスチェック
+      parameters:
+      - description: リクエスト本文
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/health.DBCommandRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: API疎通確認
+      tags:
+      - health
+  /health/db-query:
+    get:
+      consumes:
+      - application/json
+      description: 簡単なヘルスチェック
+      produces:
+      - application/json
+      responses: {}
+      summary: API疎通確認
+      tags:
+      - health
+swagger: "2.0"
