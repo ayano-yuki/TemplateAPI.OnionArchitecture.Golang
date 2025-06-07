@@ -2,55 +2,64 @@ package server
 
 import (
 	"database/sql"
+	"io"
+	"log"
 	"net/http"
+	"os"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 
-	"templateapi/onionarchitecture/golang/config"
-	"templateapi/onionarchitecture/golang/infra/command"
-	"templateapi/onionarchitecture/golang/infra/query"
-	"templateapi/onionarchitecture/golang/ui/handler"
-	"templateapi/onionarchitecture/golang/usecase"
+	"API/infra"
+	"API/ui/api/health"
+	"API/usecase"
 )
 
 type Server struct {
-	router http.Handler
-	config *config.Config
+	router *chi.Mux
+	db     *sql.DB
 }
 
 func NewServer() *Server {
-	cfg := config.Load()
-
-	db, err := sql.Open(cfg.DBDriver, cfg.DBSource)
+	// DB接続
+	dsn := "user:pass@tcp(mysql:3306)/appDB?parseTime=true"
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	healthQuery := query.NewHealthQuery(db)
-	healthCommand := command.NewHealthCommand(db)
+	// リポジトリ統合実装
+	repo := infra.NewHealthRepositoryImpl(db)
 
-	healthRepo := struct {
-		*query.HealthQuery
-		*command.HealthCommand
-	}{
-		healthQuery,
-		healthCommand,
-	}
+	// ユースケース作成
+	healthUC := usecase.NewHealthUsecase(repo)
 
-	usecase := usecase.NewHealthUsecase(&healthRepo)
-	healthHandler := handler.NewHealthHandler(usecase)
+	// ハンドラ生成
+	healthHandler := health.NewHandler(healthUC)
 
+	// ルーター設定
 	r := chi.NewRouter()
+	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{
+		Logger:  log.New(os.Stdout, "", log.LstdFlags),
+		NoColor: false,
+	}))
+
+	log.SetOutput(io.Discard)
+
 	r.Route("/health", func(r chi.Router) {
-		r.Get("/api", healthHandler.HealthAPI)
-		r.Get("/db1", healthHandler.HealthDB1)
-		r.Get("/db2", healthHandler.HealthDB2)
+		r.Get("/api", healthHandler.CheckAPIConnection)
+		r.Get("/db-query", healthHandler.GetDBTexts)
+		r.Post("/db-command", healthHandler.InsertDBText)
 	})
 
-	return &Server{router: r, config: cfg}
+	return &Server{
+		router: r,
+		db:     db,
+	}
 }
 
 func (s *Server) Start() {
-	http.ListenAndServe(s.config.Addr(), s.router)
+	log.Println("Server started on :8080")
+	http.ListenAndServe(":8080", s.router)
 }

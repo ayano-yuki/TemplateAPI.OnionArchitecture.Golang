@@ -1,0 +1,27 @@
+# Go言語関連
+/bin/
+/vendor/
+
+# IDE / エディタ関連
+.vscode/
+.idea/
+*.swp
+*.tmp
+
+# OS固有ファイル
+.DS_Store
+Thumbs.db
+
+# Docker関連
+**/node_modules/
+**/.docker/
+*.log
+
+# MySQLの永続化データは基本的に除外推奨（容量大きい）
+MySQL_data/
+!MySQL/init.sql
+
+# APIのビルド成果物（もし生成物があれば）
+API/*.exe
+API/*.out
+API/*.o

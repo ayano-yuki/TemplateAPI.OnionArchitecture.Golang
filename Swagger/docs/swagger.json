@@ -1,0 +1,79 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Health API",
+      "version": "1.0.0",
+      "description": "API for health check and DB operations"
+    },
+    "paths": {
+      "/health/api": {
+        "get": {
+          "summary": "Connection Check",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "string",
+                    "example": "OK"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/health/db-query": {
+        "get": {
+          "summary": "Get text from DB",
+          "responses": {
+            "200": {
+              "description": "Text data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "example": "sample text"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/health/db-command": {
+        "post": {
+          "summary": "Insert text to DB",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "example": "new text"
+                    }
+                  },
+                  "required": ["text"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Created"
+            }
+          }
+        }
+      }
+    }
+  }
+  

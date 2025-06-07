@@ -1,6 +1,6 @@
 package main
 
-import "templateapi/onionarchitecture/golang/server"
+import "API/server"
 
 func main() {
 	s := server.NewServer()

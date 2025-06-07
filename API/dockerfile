@@ -1,25 +1,22 @@
-# ビルド用ステージ
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24.4
 
+# 作業ディレクトリを設定
 WORKDIR /app
-RUN apk add --no-cache git gcc musl-dev
 
-# 依存解決
-COPY go.mod go.sum ./
+# air をインストール（GOBIN に明示インストール）
+ENV GOBIN=/go/bin
+RUN go install github.com/air-verse/air@latest
+
+# air 実行可能パスを PATH に追加
+ENV PATH=$GOBIN:$PATH
+
+# go module 関連の準備
+COPY go.mod ./
+COPY go.sum ./
 RUN go mod download
 
-# ソースコードコピー
+# アプリケーションコードをコピー
 COPY . .
 
-# ビルド
-RUN go build -o main .
-
-# 実行用ステージ
-FROM alpine:3.18
-RUN apk add --no-cache ca-certificates
-
-WORKDIR /app
-COPY --from=builder /app/main .
-
-EXPOSE 8080
-CMD ["./main"]
+# air コマンドで起動
+CMD ["air"]
