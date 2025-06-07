@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"API/config"
 	"API/usecase"
 )
 
@@ -15,46 +16,54 @@ func NewHandler(healthUC *usecase.HealthUsecase) *Handler {
 	return &Handler{healthUC: healthUC}
 }
 
-// CheckAPIConnection はAPI接続確認用ハンドラです。
 func (h *Handler) CheckAPIConnection(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK!"))
+	resp := map[string]string{
+		"status": "ok",
+	}
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		config.ErrInternalServer.Write(w)
+		return
+	}
 }
 
-// GetDBTexts はDBからtext一覧を取得するハンドラです。
 func (h *Handler) GetDBTexts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	texts, err := h.healthUC.GetTestTexts(ctx)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		config.ErrInternalServer.Write(w)
 		return
 	}
 
-	json.NewEncoder(w).Encode(struct {
-		Texts []string `json:"texts"`
-	}{
+	resp := DBQueryResponse{
 		Texts: texts,
-	})
+	}
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		config.ErrInternalServer.Write(w)
+		return
+	}
 }
 
-// InsertDBText はリクエストのtextをDBに挿入するハンドラです。
 func (h *Handler) InsertDBText(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var req struct {
-		Text string `json:"text"`
-	}
-
+	var req DBCommandRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		config.ErrInvalidParam.Write(w)
 		return
 	}
 
 	if err := h.healthUC.InsertTestText(ctx, req.Text); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		config.ErrInternalServer.Write(w)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
+	resp := DBCommandResponse{
+		Result: "inserted",
+	}
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		config.ErrInternalServer.Write(w)
+		return
+	}
 }

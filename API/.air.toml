@@ -2,21 +2,17 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-cmd = "go build -o ./tmp/main ."
-bin = "tmp/main"
-include_ext = ["go", "tpl", "tmpl", "html"]
-exclude_dir = ["vendor"]
-exclude_file = ["*_test.go"]
-delay = 500
-log = "stdout"
+  cmd = "go build -o ./tmp/main.exe ."
+  bin = "tmp/main.exe"
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  exclude_dir = ["vendor"]
+  exclude_file = ["*_test.go"]
+  delay = 1000
+  log = "stdout"
 
 [log]
-color = "true"
-time = "true"
-level = "debug"
+  color = true
+  time = true
 
 [run]
-watcher = "fsnotify"
-
-[misc]
-clean_on_exit = true
+  watcher = "fsnotify"

@@ -2,6 +2,7 @@ package server
 
 import (
 	"database/sql"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
 
+	"API/config"
 	"API/infra"
 	"API/ui/api/health"
 	"API/usecase"
@@ -22,8 +24,14 @@ type Server struct {
 }
 
 func NewServer() *Server {
+	// DB設定の読み込み
+	dbCfg := config.LoadDBConfig()
+
+	// DSN構築
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
+		dbCfg.User, dbCfg.Password, dbCfg.Host, dbCfg.Port, dbCfg.Name)
+
 	// DB接続
-	dsn := "user:pass@tcp(mysql:3306)/appDB?parseTime=true"
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal(err)

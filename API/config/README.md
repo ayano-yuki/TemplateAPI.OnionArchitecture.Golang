@@ -42,7 +42,6 @@
 ```sh
 config/
 ├── di_setup        # 依存関係の注入設定
-├── env_loader      # 環境変数読み込み処理
 ├── database_config # DB接続設定
 ├── server=config   # サーバー関連の設定ファイル
 └── logging_config  # ログ初期設定
