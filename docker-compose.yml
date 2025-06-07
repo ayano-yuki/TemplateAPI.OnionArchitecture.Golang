@@ -11,30 +11,10 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: pass
     volumes:
-      - ./MySQL_data:/var/lib/mysql   # ← データディレクトリは空かDBデータだけ
+      - ./MySQL/MySQL_data:/var/lib/mysql   # ← データディレクトリは空かDBデータだけ
       - ./MySQL/init.sql:/docker-entrypoint-initdb.d/init.sql  # ← 初期化SQLだけここにマウント
     ports:
       - "3306:3306"
-
-  api:
-    build:
-      context: ./API
-      dockerfile: Dockerfile
-    container_name: api
-    depends_on:
-      - db
-    volumes:
-      - ./API:/app
-    working_dir: /app
-    command: air
-    ports:
-      - "8080:8080"
-    environment:
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_USER=user
-      - DB_PASSWORD=pass
-      - DB_NAME=appDB
 
   # swagger:
   #   build:
