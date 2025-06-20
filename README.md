@@ -57,6 +57,17 @@ type ErrorResponse struct {
 }
 ```
 
+## /API のモジュール名を変更したい場合
+1. /API/rename_module.pyを実行する
+	```bash
+	python rename_module.py
+	```
+1. プロンプトに従って入力：
+   ```bash
+   Old module name (e.g., github.com/olduser/oldproject): API
+   New module name (e.g., github.com/newuser/newproject): TEST
+   ```
+
 ## 注意事項
 - `tmp/` ディレクトリは Air によって一時生成され、.gitignore 済です。
 - `air` を実行すると `docs/` にSwagger関係のファイルが生成されます（バージョン管理推奨）。
